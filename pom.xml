@@ -20,7 +20,7 @@
 
     <groupId>com.redhat.gps</groupId>
     <artifactId>openshift-cicd-demo</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <packaging>war</packaging>
 
@@ -42,7 +42,7 @@
 
     <scm>
         <developerConnection>scm:git:git@github.com:leandroberetta/openshift-cicd-demo.git</developerConnection>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <pluginRepositories>
