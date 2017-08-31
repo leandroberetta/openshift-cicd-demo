@@ -1,5 +1,8 @@
 node("maven") {
 
+    sh 'git config --global user.email "lea.beretta@gmail.com"'
+    sh 'git config --global user.name "Leandro Beretta"'
+
     stage("Checkout") {
         git url: "https://github.com/leandroberetta/openshift-cicd-demo", branch: "master"
     }
