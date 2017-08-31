@@ -151,6 +151,12 @@
             <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
             <id>openshift</id>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
                         <artifactId>maven-war-plugin</artifactId>
@@ -161,6 +167,7 @@
                             <!-- Java EE doesn't require web.xml, Maven needs to catch up! -->
                             <failOnMissingWebXml>false</failOnMissingWebXml>
                         </configuration>
+
                     </plugin>
                 </plugins>
             </build>
