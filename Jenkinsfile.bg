@@ -16,7 +16,7 @@ node("maven") {
     }
 
     stage('Release') {
-        sh 'mvn --batch-mode release:prepare'
+        sh 'mvn --batch-mode release:prepare -DdryRun=true  '
         sh 'mvn release:perform -Darguments="-Dmaven.deploy.skip=true"'
     }
 
