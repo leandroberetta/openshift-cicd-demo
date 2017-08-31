@@ -41,7 +41,7 @@
     </repositories>
 
     <scm>
-        <developerConnection>scm:git:http://github.com/leandroberetta/openshift-cicd-demo.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/leandroberetta/openshift-cicd-demo.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
