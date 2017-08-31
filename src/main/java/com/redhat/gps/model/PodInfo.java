@@ -1,4 +1,4 @@
-package io.veicot.examples.model;
+package com.redhat.gps.model;
 
 public class PodInfo {
 

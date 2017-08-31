@@ -1,6 +1,6 @@
-package io.veicot.examples.service;
+package com.redhat.gps.service;
 
-import io.veicot.examples.model.BundleInfo;
+import com.redhat.gps.model.BundleInfo;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

@@ -1,4 +1,4 @@
-package io.veicot.examples.model;
+package com.redhat.gps.model;
 
 /**
  * Created by lberetta on 7/15/17.

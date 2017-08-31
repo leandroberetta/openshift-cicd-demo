@@ -1,6 +1,6 @@
-package io.veicot.examples.service;
+package com.redhat.gps.service;
 
-import io.veicot.examples.model.PodInfo;
+import com.redhat.gps.model.PodInfo;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
