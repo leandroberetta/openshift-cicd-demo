@@ -58,7 +58,7 @@ oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n t
 oc project test
 
 # Creates a binary build (the build is not started immediately)
-oc new-build --binary=true --name="app" openshift/jboss-eap70-openshift:1.5
+oc new-build --binary=true --name="app" wildfly:10.1
 
 # Creates the application
 oc new-app test/app:TestingCandidate-1.0 --name="app" --allow-missing-imagestream-tags=true
