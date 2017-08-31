@@ -40,11 +40,6 @@
         </repository>
     </repositories>
 
-    <scm>
-        <developerConnection>scm:git:https://leandroberetta@github.com/leandroberetta/openshift-cicd-demo.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
     <pluginRepositories>
         <pluginRepository>
             <id>jboss-enterprise-maven-repository</id>
@@ -145,14 +140,6 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>${version.wildfly.maven.plugin}</version>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -169,7 +156,7 @@
                         <artifactId>maven-war-plugin</artifactId>
                         <version>${version.war.plugin}</version>
                         <configuration>
-                            <outputDirectory>deployments</outputDirectory>
+                            <outputDirectory>target</outputDirectory>
                             <warName>ROOT</warName>
                             <!-- Java EE doesn't require web.xml, Maven needs to catch up! -->
                             <failOnMissingWebXml>false</failOnMissingWebXml>
