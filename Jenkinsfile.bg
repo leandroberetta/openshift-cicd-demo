@@ -12,12 +12,7 @@ node("maven") {
         sh 'mvn test'
     }
 
-    stage('Release') {
-        sh 'mvn --batch-mode release:prepare'
-        sh 'mvn release:perform -Darguments="-Dmaven.deploy.skip=true"'
-    }
-
-    def version = getVersionFromPom("target/checkout/pom.xml")
+    def version = getVersionFromPom("pom.xml")
 
     stage('Build Image') {
         def newTag = "TestingCandidate-${version}"
