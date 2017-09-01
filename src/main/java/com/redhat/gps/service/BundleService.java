@@ -10,10 +10,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Scanner;
 
-
+import org.apache.commons.io.IOUtils;
 
 @Path("/")
 public class BundleService {
@@ -39,15 +41,28 @@ public class BundleService {
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
         Properties properties = new Properties();
 
+
+        String text = null;
+        try (Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name())) {
+            text = scanner.useDelimiter("\\A").next();
+
+            logger.info(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         if (is != null) {
             System.out.println("bundle.properties present");
             logger.info("bundle.properties present");
+
             try {
                 properties.load(is);
-                logger.info(properties.getProperty("version"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            logger.info(properties.getProperty("version"));
+
         } else {
             System.out.println("bundle.properties not present");
             logger.error("bundle.properties not present");
