@@ -5,7 +5,7 @@ node("maven") {
     }
 
     stage('Compile') {
-        sh 'mvn clean package -Popenshift'
+        sh 'mvn clean install -Popenshift'
     }
 
     stage('Test') {
