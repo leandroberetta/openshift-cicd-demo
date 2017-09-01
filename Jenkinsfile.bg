@@ -14,7 +14,7 @@ node("maven") {
 
     def version = getVersionFromPom("pom.xml")
 
-    stage("Build Image"') {
+    stage("Build Image") {
         def newTag = "TestingCandidate-${version}"
 
         sh "cp ./target/openshift-cicd-demo.war ./ROOT.war"
