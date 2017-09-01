@@ -14,7 +14,7 @@ import java.util.Properties;
 public class BundleService {
 
     @GET
-    @Path("/bundleInf2")
+    @Path("/bundleInfo")
     @Produces("application/json")
     public BundleInfo getBundleInfo() {
         BundleInfo bundleInfo = new BundleInfo();
