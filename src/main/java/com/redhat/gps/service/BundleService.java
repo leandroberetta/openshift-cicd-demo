@@ -40,6 +40,7 @@ public class BundleService {
         Properties properties = new Properties();
 
         if (optInputStream.isPresent()) {
+            logger.error("bundle.properties present");
             try {
                 properties.load(optInputStream.get());
             } catch (IOException e) {
