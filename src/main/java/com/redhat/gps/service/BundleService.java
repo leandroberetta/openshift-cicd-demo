@@ -26,7 +26,7 @@ public class BundleService {
     public BundleInfo getBundleInfo() {
         BundleInfo bundleInfo = new BundleInfo();
 
-        Properties properties = this.loadProperties("META-INF/bundle.properties");
+        Properties properties = this.loadProperties("bundle.properties");
 
         bundleInfo.setVersion(properties.getProperty("version"));
         bundleInfo.setArtifactId(properties.getProperty("artifactId"));
