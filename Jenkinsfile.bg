@@ -5,7 +5,7 @@ node("maven") {
     }
 
     stage('Compile') {
-        sh 'mvn clean install -Popenshift'
+        sh 'mvn clean package -DskipTests'
     }
 
     stage('Test') {
@@ -17,8 +17,11 @@ node("maven") {
     stage('Build Image') {
         def newTag = "TestingCandidate-${version}"
 
+        sh "cp ./target/openshift-cicd-demo.war ./ROOT.war"
+
+
         sh "oc project test"
-        sh "oc start-build app --from-file=./target/ROOT.war -n test"
+        sh "oc start-build app --from-file=./ROOT.war -n test"
 
         openshiftVerifyBuild bldCfg: 'app',
                              namespace: 'test'
