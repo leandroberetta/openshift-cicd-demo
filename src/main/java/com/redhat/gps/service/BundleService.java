@@ -36,14 +36,14 @@ public class BundleService {
     }
 
     private Properties loadProperties(String fileName) {
-        Optional<InputStream> optInputStream = Optional.of(getClass().getClassLoader().getResourceAsStream(fileName));
+        InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
         Properties properties = new Properties();
 
-        if (optInputStream.isPresent()) {
+        if (is != null) {
             System.out.println("bundle.properties present");
             logger.info("bundle.properties present");
             try {
-                properties.load(optInputStream.get());
+                properties.load(is);
                 logger.info(properties.getProperty("version"));
             } catch (IOException e) {
                 e.printStackTrace();
