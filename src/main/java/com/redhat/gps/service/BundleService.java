@@ -2,6 +2,9 @@ package com.redhat.gps.service;
 
 import com.redhat.gps.model.BundleInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,14 +13,19 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.Properties;
 
+
+
 @Path("/")
 public class BundleService {
+
+    Logger logger = LoggerFactory.getLogger(BundleService.class);
 
     @GET
     @Path("/bundleInfo")
     @Produces("application/json")
     public BundleInfo getBundleInfo() {
         BundleInfo bundleInfo = new BundleInfo();
+
         Properties properties = this.loadProperties("META-INF/bundle.properties");
 
         bundleInfo.setVersion(properties.getProperty("version"));
@@ -28,7 +36,7 @@ public class BundleService {
     }
 
     private Properties loadProperties(String fileName) {
-        Optional<InputStream> optInputStream = Optional.of(BundleService.class.getClassLoader().getResourceAsStream(fileName));
+        Optional<InputStream> optInputStream = Optional.of(getClass().getClassLoader().getResourceAsStream(fileName));
         Properties properties = new Properties();
 
         if (optInputStream.isPresent()) {
@@ -38,7 +46,7 @@ public class BundleService {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("bundle.properties not present");
+            logger.error("bundle.properties not present");
         }
 
         return properties;
