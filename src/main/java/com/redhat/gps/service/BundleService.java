@@ -44,6 +44,7 @@ public class BundleService {
             logger.info("bundle.properties present");
             try {
                 properties.load(optInputStream.get());
+                logger.info(properties.getProperty("version"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
