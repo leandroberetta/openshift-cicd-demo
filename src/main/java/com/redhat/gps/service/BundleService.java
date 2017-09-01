@@ -18,7 +18,7 @@ public class BundleService {
     @Produces("application/json")
     public BundleInfo getBundleInfo() {
         BundleInfo bundleInfo = new BundleInfo();
-        Properties properties = this.loadProperties("bundle.properties");
+        Properties properties = this.loadProperties("META-INF/bundle.properties");
 
         bundleInfo.setVersion(properties.getProperty("version"));
         bundleInfo.setArtifactId(properties.getProperty("artifactId"));
@@ -37,6 +37,8 @@ public class BundleService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("bundle.properties not present");
         }
 
         return properties;
