@@ -51,7 +51,7 @@ node("maven") {
         openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "test", srcStream: "app", srcTag: "latest", verbose: "false"
     }
 
-    stage("Deploy Pre-Prod?") {
+    stage('Deploy Pre-Prod?') {
         input "Deploy new version to Pre-Production?"
     }
 
@@ -65,7 +65,7 @@ node("maven") {
         sh "oc project prod"
         sh "oc get route blue-green -n prod -o jsonpath='{ .spec.to.name }' > activesvc.txt"
 
-        active = readFile("activesvc.txt").trim()
+        active = readFile('activesvc.txt').trim()
 
         if (active == "app-green") {
             dest = "app-blue"
@@ -77,21 +77,21 @@ node("maven") {
         // Patches the dc to point the last tagged image
         sh "oc patch dc ${dest} --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"$dest\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"test\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
 
-        openshiftDeploy depCfg: dest, namespace: "prod", verbose: "false", waitTime: "", waitUnit: "sec"
+        openshiftDeploy depCfg: dest, namespace: 'prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
     }
 
-    stage("Switch Version?") {
+    stage('Switch Version?') {
         input "Switch to new version?"
     }
 
-    sh "oc patch route blue-green -n prod -p \'{"spec":{"to":{"name":"' + dest + '"}}}\'"
+    sh 'oc patch route blue-green -n prod -p \'{"spec":{"to":{"name":"' + dest + '"}}}\''
 
-    stage("Finish Deployment") {
-        rollback = input message: "Rollback to previous version?", parameters: [choice(choices: "Yes\nNo", description: "", name: "rollback")]
+    stage('Finish Deployment') {
+        rollback = input message: 'Rollback to previous version?', parameters: [choice(choices: "Yes\nNo", description: '', name: 'rollback')]
     }
 
-    if (rollback.equals("Yes")) {
-        sh "oc patch route blue-green -n prod -p \'{"spec":{"to":{"name":"' + active + '"}}}\'"
+    if (rollback.equals('Yes')) {
+        sh 'oc patch route blue-green -n prod -p \'{"spec":{"to":{"name":"' + active + '"}}}\''
         echo "Deployment rolled back successfully"
     } else {
         echo "Deployment finished successfully"
@@ -99,6 +99,6 @@ node("maven") {
 }
 
 def getVersionFromPom(pom) {
-    def matcher = readFile(pom) =~ "<version>(.+)</version>"
+    def matcher = readFile(pom) =~ '<version>(.+)</version>'
     matcher ? matcher[0][1] : null
 }
