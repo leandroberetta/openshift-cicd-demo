@@ -1,12 +1,10 @@
 #! /usr/bin/env bash
 
-#########################################################################
 #
 # Author: Leandro Beretta <lberetta@redhat.com>
 #
 # Script to create the demo environments and pipelines configuration.
 #
-#########################################################################
 
 #
 # Users creation
