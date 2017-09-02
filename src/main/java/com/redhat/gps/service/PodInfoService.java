@@ -6,6 +6,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+/**
+ * Created by lberetta on 7/15/17.
+ */
 @Path("/")
 public class PodInfoService {
 

@@ -10,13 +10,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.Scanner;
 
-import org.apache.commons.io.IOUtils;
-
+/**
+ * Created by lberetta on 7/15/17.
+ */
 @Path("/")
 public class BundleService {
 

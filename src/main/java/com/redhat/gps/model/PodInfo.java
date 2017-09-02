@@ -1,5 +1,8 @@
 package com.redhat.gps.model;
 
+/**
+ * Created by lberetta on 7/15/17.
+ */
 public class PodInfo {
 
     private String name;
