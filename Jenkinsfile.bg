@@ -19,21 +19,20 @@ node("maven") {
 
         sh "cp ./target/openshift-cicd-demo.war ./ROOT.war"
 
-
         sh "oc project test"
         sh "oc start-build app --from-file=./ROOT.war -n test"
 
         openshiftVerifyBuild bldCfg: "app",
-                             namespace: 'test'
+                             namespace: "test"
 
         openshiftTag alias: "false",
-                     destStream: 'app',
+                     destStream: "app",
                      destTag: newTag,
                      destinationNamespace: "test",
                      namespace: "test",
                      srcStream: "app",
                      srcTag: "latest",
-                     verbose: "false"
+                     verbose: "true"
     }
 
     stage("Deploy to Test") {
