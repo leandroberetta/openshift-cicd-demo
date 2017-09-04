@@ -2,7 +2,6 @@
 
 ![demo](demo/img/demo.png)
 
-
 This repository contains a demo of the following OpenShift capabilities:
 
 * **Blue-Green** deployments with zero downtime
