@@ -1,0 +1,62 @@
+/**
+ * Created by lberetta on 7/15/17.
+ */
+
+try {
+    timeout(time: 60, unit: 'MINUTES') {
+
+        node("maven") {
+            stage("Checkout") {
+                git url: "https://github.com/leandroberetta/openshift-cicd-demo", branch: "develop"
+            }
+
+            stage("Compile") {
+                sh "mvn clean package -DskipTests -Popenshift"
+            }
+
+            stage("Test") {
+                sh "mvn test"
+            }
+
+            def version = getVersionFromPom("pom.xml")
+
+            stage("Build Image") {
+                def newTag = "TestingCandidate-${version}"
+
+                sh "oc project dev"
+                sh "oc start-build app --from-file=./target/ROOT.war -n test"
+
+                openshiftVerifyBuild bldCfg: "app",
+                        namespace: "dev"
+
+                openshiftTag alias: "false",
+                        destStream: "app",
+                        destTag: newTag,
+                        destinationNamespace: "dev",
+                        namespace: "dev",
+                        srcStream: "app",
+                        srcTag: "latest",
+                        verbose: "true"
+
+            }
+
+            stage("Deploy to Dev") {
+                sh "oc project dev"
+                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:TestingCandidate-$version\"}}}]}}' -n dev"
+
+                openshiftDeploy depCfg: "app",
+                        namespace: "dev"
+            }
+        }
+    }
+} catch (err) {
+    echo "Caught: ${err}"
+    currentBuild.result = 'FAILURE'
+
+    throw err
+}
+
+def getVersionFromPom(pom) {
+    def matcher = readFile(pom) =~ '<version>(.+)</version>'
+    matcher ? matcher[0][1] : null
+}

@@ -32,8 +32,12 @@ oc new-app --template=jenkins-persistent -p MEMORY_LIMIT=1Gi -l app=jenkins
 # Environments creation
 #
 
+oc new-project dev --display-name=DEV
 oc new-project test --display-name=TEST
 oc new-project prod --display-name=PROD
+
+# Grant edit access to developer in dev project
+oc adm policy add-role-to-user edit developer -n dev
 
 # Grant edit access to developer in test project
 oc adm policy add-role-to-user edit developer -n test
@@ -45,29 +49,39 @@ oc adm policy add-role-to-user view developer -n prod
 oc adm policy add-role-to-user edit developer -n jenkins
 
 # Grant edit access to jenkins service account
+oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n test
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n prod
 
 # Allow prod service account the ability to pull images from test
-oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n test
+oc policy add-role-to-group system:image-puller system:serviceaccounts:test -n dev
+oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n dev
 
 #
 # Application deployment
 #
 
-oc project test
+#
+# Test application
+#
+
+oc project dev
 
 # Creates a binary build (the build is not started immediately)
 oc new-build --binary=true --name="app" wildfly:10.1
 
 # Creates the application
-oc new-app test/app:TestingCandidate-1.0 --name="app" --allow-missing-imagestream-tags=true
+oc new-app test/app:DevCandidate-1.0 --name="app" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app --remove-all
 
 oc expose dc/app --port 8080
 oc expose svc/app
+
+#
+# Pipeline deployment
+#
 
 oc project jenkins
 
@@ -102,6 +116,38 @@ spec:
     type: "JenkinsPipeline"
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile.ab' | oc create -f -
+
+echo 'apiVersion: v1
+kind: BuildConfig
+metadata:
+  labels:
+    name: "ci-pipeline"
+  name: "ci-pipeline"
+spec:
+  source:
+    type: "Git"
+    git:
+      ref: "develop"
+      uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+  strategy:
+    type: "JenkinsPipeline"
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: Jenkinsfile.ci' | oc create -f -
+
+
+#
+# Test application
+#
+
+oc project test
+
+oc new-app test/app:TestCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
+
+# Removes the triggers
+oc set triggers dc/app --remove-all
+
+oc expose dc/app --port 8080
+oc expose svc/app
 
 #
 # Production applications
