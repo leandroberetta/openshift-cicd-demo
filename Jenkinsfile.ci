@@ -24,7 +24,7 @@ try {
                 def newTag = "TestingCandidate-${version}"
 
                 sh "oc project dev"
-                sh "oc start-build app --from-file=./target/ROOT.war -n test"
+                sh "oc start-build app --from-file=./target/ROOT.war -n dev"
 
                 openshiftVerifyBuild bldCfg: "app",
                         namespace: "dev"

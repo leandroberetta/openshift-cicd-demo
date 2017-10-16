@@ -68,10 +68,10 @@ oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n d
 oc project dev
 
 # Creates a binary build (the build is not started immediately)
-oc new-build --binary=true --name="app" wildfly:10.1
+oc new-build --binary=true --name="app" jboss-eap70-openshift:1.5
 
 # Creates the application
-oc new-app test/app:DevCandidate-1.0 --name="app" --allow-missing-imagestream-tags=true
+oc new-app test/app:DevCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app --remove-all
