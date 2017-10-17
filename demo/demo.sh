@@ -71,7 +71,7 @@ oc project dev
 oc new-build --binary=true --name="app" jboss-eap70-openshift:1.5
 
 # Creates the application
-oc new-app test/app:DevCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
+oc new-app dev/app:DevCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app --remove-all
@@ -134,6 +134,22 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile.ci' | oc create -f -
 
+      echo 'apiVersion: v1
+      kind: BuildConfig
+      metadata:
+        labels:
+          name: "ci-pipeline"
+        name: "ci-pipeline"
+      spec:
+        source:
+          type: "Git"
+          git:
+            ref: "develop"
+            uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+        strategy:
+          type: "JenkinsPipeline"
+          jenkinsPipelineStrategy:
+            jenkinsfilePath: Jenkinsfile.cd' | oc create -f -
 
 #
 # Test application
@@ -141,7 +157,7 @@ spec:
 
 oc project test
 
-oc new-app test/app:TestCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
+oc new-app dev/app:TestCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app --remove-all
@@ -158,8 +174,8 @@ oc expose svc/app
 oc project prod
 
 # Creates the blue and green applications (observe that in prod is not a BuildConfig object created)
-oc new-app test/app:ProdReady-1.0.0 --name="app-green" --allow-missing-imagestream-tags=true
-oc new-app test/app:ProdReady-1.0.0 --name="app-blue" --allow-missing-imagestream-tags=true
+oc new-app dev/app:ProdReady-1.0.0 --name="app-green" --allow-missing-imagestream-tags=true
+oc new-app dev/app:ProdReady-1.0.0 --name="app-blue" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app-green --remove-all
