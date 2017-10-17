@@ -17,7 +17,7 @@ try {
                     destStream: "app",
                     destTag: newTag,
                     destinationNamespace: "test",
-                    namespace: "test",
+                    namespace: "dev",
                     srcStream: "app",
                     srcTag: "latest",
                     verbose: "true"
@@ -35,7 +35,7 @@ try {
 
                 newTag = "ProdReady-" + env.version
 
-                openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "test", srcStream: "app", srcTag: "latest", verbose: "false"
+                openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "dev", srcStream: "app", srcTag: "latest", verbose: "false"
             }
 
             stage('Deploy Pre-Prod?') {
