@@ -8,7 +8,7 @@ try {
         node() {
 
             stage("Choose version") {
-                input(message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]);
+                env.version = input(message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]);
             }
 
             def newTag = "TestingCandidate-" + env.version
