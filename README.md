@@ -43,16 +43,16 @@ The environments created are:
 
 ### CI/CD Pipeline (Blue-Green)
 
-![bluegreen](demo/img/bluegreen.png)
+![bg-pipeline](demo/img/bg-pipeline.png)
 
 ### A/B Pipeline
 
-![ab](demo/img/ab.png)
+![ab-pipeline](demo/img/ab-pipeline.png)
 
 ### CI Pipeline (just for Dev deployments)
 
-![ci](demo/img/ab.png)
+![ci-pipeline](demo/img/ci-pipeline.png)
 
 ### CD Pipeline (deploys an specific image without building)
 
-![cd](demo/img/ab.png)
+![cd-pipeline](demo/img/cd-pipeline.png)
