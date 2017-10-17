@@ -7,11 +7,9 @@ node() {
     def greenTraffic = 100
 
     stage("Choose Traffic (%)") {
-        script {
-            env.traffic = input message: "Change Blue App Traffic",
-                                parameters: [choice(choices: "0\n10\n20\n30\n40\n50\n60\n70\n80\n90\n100",
-                                description: "Traffic (%)", name: "blueTraffic")]
-        }
+        env.traffic = input message: "Change Blue App Traffic",
+                            parameters: [choice(choices: "0\n10\n20\n30\n40\n50\n60\n70\n80\n90\n100",
+                            description: "Traffic (%)", name: "blueTraffic")]
     }
 
     blueTraffic = "${env.traffic}"
