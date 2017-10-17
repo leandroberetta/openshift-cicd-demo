@@ -10,7 +10,7 @@ try {
                 def version = input message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]
             }
 
-            def newTag = "TestingCandidate-${version}"
+            def newTag = "TestingCandidate-" + version
 
             openshiftTag alias: "false",
                     destStream: "app",
@@ -32,7 +32,7 @@ try {
             stage("Integration Test") {
                 // Complete this section with your actual integration tests
 
-                newTag = "ProdReady-${version}"
+                newTag = "ProdReady-" + version
 
                 openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "test", srcStream: "app", srcTag: "latest", verbose: "false"
             }
