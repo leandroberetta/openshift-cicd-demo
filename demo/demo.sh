@@ -134,22 +134,22 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile.ci' | oc create -f -
 
-      echo 'apiVersion: v1
-      kind: BuildConfig
-      metadata:
-        labels:
-          name: "ci-pipeline"
-        name: "ci-pipeline"
-      spec:
-        source:
-          type: "Git"
-          git:
-            ref: "develop"
-            uri: "https://github.com/leandroberetta/openshift-cicd-demo"
-        strategy:
-          type: "JenkinsPipeline"
-          jenkinsPipelineStrategy:
-            jenkinsfilePath: Jenkinsfile.cd' | oc create -f -
+echo 'apiVersion: v1
+kind: BuildConfig
+metadata:
+  labels:
+    name: "cd-pipeline"
+  name: "cd-pipeline"
+spec:
+  source:
+    type: "Git"
+    git:
+      ref: "develop"
+      uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+  strategy:
+    type: "JenkinsPipeline"
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: Jenkinsfile.cd' | oc create -f -
 
 #
 # Test application

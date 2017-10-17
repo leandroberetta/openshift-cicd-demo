@@ -32,7 +32,7 @@ try {
             stage("Integration Test") {
                 // Complete this section with your actual integration tests
 
-                def newTag = "ProdReady-${version}"
+                newTag = "ProdReady-${version}"
 
                 openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "test", srcStream: "app", srcTag: "latest", verbose: "false"
             }
