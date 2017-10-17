@@ -7,18 +7,6 @@
 #
 
 #
-# Users creation
-#
-
-oc login -u admin -p admin
-oc login -u developer -p developer
-
-oc login -u system:admin
-
-# Gives admin role to admin user
-oc adm policy add-role-to-user admin admin
-
-#
 # Jenkins
 #
 
@@ -45,7 +33,7 @@ oc adm policy add-role-to-user edit developer -n test
 # Grant view access to developer in prod project
 oc adm policy add-role-to-user view developer -n prod
 
-# Grant view access to developer in prod project
+# Grant view access to developer in jenkins project
 oc adm policy add-role-to-user edit developer -n jenkins
 
 # Grant edit access to jenkins service account
@@ -53,7 +41,7 @@ oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n test
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n prod
 
-# Allow prod service account the ability to pull images from test
+# Allow prod service account the ability to pull images from dev
 oc policy add-role-to-group system:image-puller system:serviceaccounts:test -n dev
 oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n dev
 

@@ -8,7 +8,7 @@ try {
         node("maven") {
 
             stage("Checkout") {
-                git url: "https://github.com/leandroberetta/openshift-cicd-demo", branch: "master"
+                git url: "https://github.com/leandroberetta/openshift-cicd-demo", branch: "develop"
             }
 
             stage("Compile") {
@@ -22,25 +22,46 @@ try {
             def version = getVersionFromPom("pom.xml")
 
             stage("Build Image") {
-                def newTag = "TestingCandidate-${version}"
+                def newTag = "DevCandidate-${version}"
 
-                sh "oc project test"
-                sh "oc start-build app --from-file=./target/ROOT.war -n test"
+                sh "oc project dev"
+                sh "oc start-build app --from-file=./target/ROOT.war -n dev"
 
                 openshiftVerifyBuild bldCfg: "app",
-                        namespace: "test"
+                        namespace: "dev"
 
                 openshiftTag alias: "false",
                         destStream: "app",
                         destTag: newTag,
-                        destinationNamespace: "test",
-                        namespace: "test",
+                        destinationNamespace: "dev",
+                        namespace: "dev",
                         srcStream: "app",
                         srcTag: "latest",
                         verbose: "true"
             }
 
+            stage("Deploy to Dev") {
+                sh "oc project dev"
+                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:DevCandidate-$version\"}}}]}}' -n dev"
+
+                openshiftDeploy depCfg: "app",
+                        namespace: "test"
+            }
+
+            stage('Deploy to Test?') {
+                input "Deploy new version to Test?"
+            }
+
             stage("Deploy to Test") {
+                openshiftTag alias: "false",
+                        destStream: "app",
+                        destTag: newTag,
+                        destinationNamespace: "dev",
+                        namespace: "dev",
+                        srcStream: "app",
+                        srcTag: "latest",
+                        verbose: "true"
+
                 sh "oc project test"
                 sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"test\", \"name\": \"app:TestingCandidate-$version\"}}}]}}' -n test"
 
@@ -53,7 +74,7 @@ try {
 
                 def newTag = "ProdReady-${version}"
 
-                openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "test", srcStream: "app", srcTag: "latest", verbose: "false"
+                openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "dev", namespace: "dev", srcStream: "app", srcTag: "latest", verbose: "false"
             }
 
             stage('Deploy Pre-Prod?') {
