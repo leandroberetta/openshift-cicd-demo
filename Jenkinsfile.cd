@@ -8,12 +8,10 @@ try {
         node() {
 
             stage("Choose version") {
-              script {
                 input(message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]);
-                }
             }
 
-            def newTag = "TestingCandidate-" + params.version
+            def newTag = "TestingCandidate-" + env.version
 
             openshiftTag alias: "false",
                     destStream: "app",
@@ -35,7 +33,7 @@ try {
             stage("Integration Test") {
                 // Complete this section with your actual integration tests
 
-                newTag = "ProdReady-" + params.version
+                newTag = "ProdReady-" + env.version
 
                 openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "test", namespace: "test", srcStream: "app", srcTag: "latest", verbose: "false"
             }
