@@ -6,9 +6,8 @@ try {
     timeout(time: 10, unit: 'MINUTES') {
 
         node() {
-            stage("Choose version") {
-                input(message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]);
-            }
+            input id: 'Version', message: 'Version?', parameters: [string(defaultValue: '1.0.0', description: '', name: 'version')]
+
 
             def newTag = "TestingCandidate-" + params.version
 
