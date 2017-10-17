@@ -53,6 +53,8 @@ try {
             }
 
             stage("Deploy to Test") {
+                def newTag = "TestCandidate-${version}"
+
                 openshiftTag alias: "false",
                         destStream: "app",
                         destTag: newTag,
