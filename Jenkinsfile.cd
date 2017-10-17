@@ -7,7 +7,9 @@ try {
 
         node() {
             stage("Choose version") {
-                def version = input message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]
+                def version = input(message: 'Version', parameters: [string(defaultValue: '', description: '', name: 'version')]);
+
+                System.out.println(version);
             }
 
             def newTag = "TestingCandidate-" + version
