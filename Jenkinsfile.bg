@@ -65,7 +65,7 @@ try {
                         verbose: "true"
 
                 sh "oc project test"
-                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"test\", \"name\": \"app:TestCandidate-$version\"}}}]}}' -n test"
+                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:TestCandidate-$version\"}}}]}}' -n test"
 
                 openshiftDeploy depCfg: "app",
                         namespace: "test"
@@ -98,7 +98,7 @@ try {
                 if (active == "app-green")
                     dest = "app-blue"
 
-                sh "oc patch dc ${dest} --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"$dest\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"test\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
+                sh "oc patch dc ${dest} --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"$dest\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
 
                 openshiftDeploy depCfg: dest,
                         namespace: 'prod'
