@@ -84,6 +84,7 @@ spec:
     type: "Git"
     git:
       uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+      ref: "develop"
   strategy:
     type: "JenkinsPipeline"
     jenkinsPipelineStrategy:
@@ -100,6 +101,7 @@ spec:
     type: "Git"
     git:
       uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+      ref: "develop"
   strategy:
     type: "JenkinsPipeline"
     jenkinsPipelineStrategy:

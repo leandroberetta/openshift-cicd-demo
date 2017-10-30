@@ -45,7 +45,7 @@ try {
                 sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:DevCandidate-$version\"}}}]}}' -n dev"
 
                 openshiftDeploy depCfg: "app",
-                        namespace: "test"
+                        namespace: "dev"
             }
 
             stage('Deploy to Test?') {
