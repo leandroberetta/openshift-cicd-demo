@@ -3,14 +3,14 @@
 #
 # Author: Leandro Beretta <lberetta@redhat.com>
 #
-# Script to create the demo environments and pipelines configuration.
+# Script to create the environments and pipelines configuration.
 #
+
+oc login -u admin -p admin
 
 #
 # Jenkins
 #
-
-oc login -u admin -p admin
 
 oc new-project jenkins --display-name=JENKINS
 
@@ -27,7 +27,7 @@ oc new-project prod --display-name=PROD
 # Grant edit access to developer in dev project
 oc adm policy add-role-to-user edit developer -n dev
 
-# Grant edit access to developer in test project
+# Grant view access to developer in test project
 oc adm policy add-role-to-user edit developer -n test
 
 # Grant view access to developer in prod project
@@ -68,7 +68,7 @@ oc expose dc/app --port 8080
 oc expose svc/app
 
 #
-# Pipeline deployment
+# Pipelines deployment
 #
 
 oc project jenkins
@@ -175,3 +175,13 @@ oc expose dc/app-blue --port 8080
 oc expose dc/app-green --port 8080
 
 oc expose svc/app-green --name blue-green
+
+# Projects clean up
+
+oc login -u admin -p admin
+
+oc delete project myproject
+
+oc login -u developer -p developer
+
+oc delete project myproject
