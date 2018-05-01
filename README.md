@@ -8,21 +8,21 @@ This repository contains a demo of the following OpenShift capabilities:
 * **A/B** deployments for experimental applications on production
 * Integration with **Jenkins Pipelines**
 * Continuous integration in Dev environment (**CI**)
-* Continuous deployment (Blue-Green and A/B) in Test and Production environment (**CD**)
+* Continuous deployment (Basic, Blue-Green and A/B) in Test and Production environment (**CD**)
 
 ## Requisites
 
-* An **OpenShift Container Platform 3.6** cluster
-* The OpenShift CLI client (**oc**) for executing remotes commands to the cluster
+* An **OpenShift** cluster (3.5 or higher)
+* The OpenShift CLI client (**oc**)
 * Python 3.5 or higher (for testing the service) with requests library installed
 
 ## Usage
 
-This demo can be be used in every cluster of OpenShift. The easiest way is to use **minishift**:
+The demo can be be used in every cluster of OpenShift. The easiest way is to use **minishift**:
 
     minishift start
 
-Then this repository contains a **demo.sh** script to generate all the needed objects.
+This repository contains a script called **demo.sh** to generate all the needed objects.
 
     sh demo/demo.sh
 
@@ -39,9 +39,9 @@ The environments created are:
 * Test
 * Prod
 
-## Steps
+## Pipelines
 
-### CI/CD Pipeline (Blue-Green)
+### Blue-Green Pipeline
 
 ![bg-pipeline](demo/img/bg-pipeline.png)
 
