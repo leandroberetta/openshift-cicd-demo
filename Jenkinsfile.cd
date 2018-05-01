@@ -50,7 +50,7 @@ try {
             stage("Deploy to PROD") {
                 sh "oc patch dc app-green --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app-green\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"prod\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
 
-                openshiftDeploy depCfg: "app", namespace: "prod"
+                openshiftDeploy depCfg: "app-green", namespace: "prod"
             }
         }
     }
