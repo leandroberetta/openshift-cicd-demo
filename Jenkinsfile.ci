@@ -27,7 +27,9 @@ try {
                 sh "oc start-build app --from-file=./target/ROOT.war -n dev"
 
                 openshiftVerifyBuild bldCfg: "app",
-                        namespace: "dev"
+                        namespace: "dev",
+                        waitTime: '300', 
+                        waitUnit: 'sec'
 
                 openshiftTag alias: "false",
                         destStream: "app",

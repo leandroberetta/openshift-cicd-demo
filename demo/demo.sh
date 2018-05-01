@@ -13,7 +13,7 @@ GIT_DEMO_BRANCH=$3
 oc login $OCP_CLUSTER_URL -u administrator -p administrator
 
 #
-# Jenkins
+# Jenkins deployment
 #
 
 oc new-project jenkins --display-name=JENKINS
