@@ -64,7 +64,7 @@ try {
 
             sh "oc patch route blue-green -n prod -p '{ \"spec\" : { \"to\" : { \"name\" : \"$dest\" } } }'"
 
-            stage("Rollback PROD") {
+            stage("End Deploy") {
                 rollback = input message: "Rollback to previous version?",
                         parameters: [choice(choices: "Yes\nNo", description: '', name: 'Rollback')]
             }
