@@ -5,54 +5,22 @@
 try {
     timeout(time: 10, unit: 'MINUTES') {
 
-        node("maven") {
+        node() {
 
-            stage("Checkout") {
-                git url: env.GIT_DEMO_URL, branch: env.GIT_DEMO_BRANCH
+            stage("Choose Version") {
+                env.version = selectVersion("app", "DevSnapshot", "dev");
             }
 
-            stage("Compile") {
-                sh "mvn clean package -DskipTests -Popenshift"
-            }
+            def newTag = "TestingCandidate-" + env.version
 
-            stage("Test") {
-                sh "mvn test"
-            }
-
-            def version = getVersionFromPom("pom.xml")
-
-            stage("Build Image") {
-                def newTag = "DevCandidate-${version}"
-
-                sh "oc project dev"
-                sh "oc start-build app --from-file=./target/ROOT.war -n dev"
-
-                openshiftVerifyBuild bldCfg: "app",
-                        namespace: "dev",
-                        waitTime: '300', 
-                        waitUnit: 'sec'
-
-                openshiftTag alias: "false",
-                        destStream: "app",
-                        destTag: newTag,
-                        destinationNamespace: "dev",
-                        namespace: "dev",
-                        srcStream: "app",
-                        srcTag: "latest",
-                        verbose: "true"
-            }
-
-            stage("Deploy to Dev") {
-                sh "oc project dev"
-                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:DevCandidate-$version\"}}}]}}' -n dev"
-
-                openshiftDeploy depCfg: "app",
-                        namespace: "dev"
-            }
-
-            stage('Deploy to Test?') {
-                input "Deploy new version to Test?"
-            }
+            openshiftTag alias: "false",
+                    destStream: "app",
+                    destTag: newTag,
+                    destinationNamespace: "test",
+                    namespace: "dev",
+                    srcStream: "app",
+                    srcTag: "DevSnapshot-" + env.version,
+                    verbose: "true"
 
             stage("Deploy to Test") {
                 def newTag = "TestCandidate-${version}"
@@ -63,7 +31,7 @@ try {
                         destinationNamespace: "test",
                         namespace: "dev",
                         srcStream: "app",
-                        srcTag: "DevCandidate-${version}",
+                        srcTag: "DevSnapshot-${version}",
                         verbose: "true"
 
                 sh "oc project test"
