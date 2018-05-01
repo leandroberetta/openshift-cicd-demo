@@ -7,7 +7,7 @@ try {
 
         node("maven") {
             stage("Checkout") {
-                git url: "https://github.com/leandroberetta/openshift-cicd-demo", branch: "develop"
+                git url: env.GIT_DEMO_URL, branch: env.GIT_DEMO_BRANCH
             }
 
             stage("Compile") {

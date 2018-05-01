@@ -54,7 +54,7 @@ oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n d
 #
 
 #
-# Test application
+# Dev application
 #
 
 oc project dev
@@ -70,6 +70,41 @@ oc set triggers dc/app --remove-all
 
 oc expose dc/app --port 8080
 oc expose svc/app
+
+#
+# Test application
+#
+
+oc project test
+
+oc new-app dev/app:latest --name="app" --allow-missing-imagestream-tags=true
+
+# Removes the triggers
+oc set triggers dc/app --remove-all
+
+oc expose dc/app --port 8080
+oc expose svc/app
+
+#
+# Prod applications
+#
+
+# Blue/Green
+
+oc project prod
+
+# Creates the blue and green applications (observe that in prod is not a BuildConfig object created)
+oc new-app dev/app:latest --name="app-green" --allow-missing-imagestream-tags=true
+oc new-app dev/app:latest --name="app-blue" --allow-missing-imagestream-tags=true
+
+# Removes the triggers
+oc set triggers dc/app-green --remove-all
+oc set triggers dc/app-blue --remove-all
+
+oc expose dc/app-blue --port 8080
+oc expose dc/app-green --port 8080
+
+oc expose svc/app-green --name blue-green
 
 #
 # Pipelines deployment
@@ -91,6 +126,9 @@ spec:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile.bg" | oc create -f -
+
+oc set env bc/blue-green-pipeline GIT_DEMO_URL=$GIT_DEMO_URL -n jenkins
+oc set env bc/blue-green-pipeline GIT_DEMO_BRANCH=$GIT_DEMO_BRANCH -n jenkins
 
 echo "apiVersion: v1
 kind: BuildConfig
@@ -122,6 +160,9 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile.ci" | oc create -f -
 
+oc set env bc/ci-pipeline GIT_DEMO_URL=$GIT_DEMO_URL -n jenkins
+oc set env bc/ci-pipeline GIT_DEMO_BRANCH=$GIT_DEMO_BRANCH -n jenkins
+
 echo "apiVersion: v1
 kind: BuildConfig
 metadata:
@@ -136,38 +177,3 @@ spec:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile.cd" | oc create -f -
-
-#
-# Test application
-#
-
-oc project test
-
-oc new-app dev/app:latest --name="app" --allow-missing-imagestream-tags=true
-
-# Removes the triggers
-oc set triggers dc/app --remove-all
-
-oc expose dc/app --port 8080
-oc expose svc/app
-
-#
-# Production applications
-#
-
-# Blue/Green
-
-oc project prod
-
-# Creates the blue and green applications (observe that in prod is not a BuildConfig object created)
-oc new-app dev/app:latest --name="app-green" --allow-missing-imagestream-tags=true
-oc new-app dev/app:latest --name="app-blue" --allow-missing-imagestream-tags=true
-
-# Removes the triggers
-oc set triggers dc/app-green --remove-all
-oc set triggers dc/app-blue --remove-all
-
-oc expose dc/app-blue --port 8080
-oc expose dc/app-green --port 8080
-
-oc expose svc/app-green --name blue-green
