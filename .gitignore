@@ -1,5 +1,7 @@
 .idea
 *.iml
 target
-*.releaseBackup
-release.properties
+.classpath
+.project
+.settings
+.DS_Store

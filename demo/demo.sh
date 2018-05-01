@@ -6,7 +6,7 @@
 # Script to create the environments and pipelines configuration.
 #
 
-oc login -u admin -p admin
+oc login -u administrator -p administrator
 
 #
 # Jenkins
@@ -59,7 +59,7 @@ oc project dev
 oc new-build --binary=true --name="app" jboss-eap70-openshift:1.5
 
 # Creates the application
-oc new-app dev/app:DevCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
+oc new-app dev/app:latest --name="app" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app --remove-all
@@ -147,7 +147,7 @@ spec:
 
 oc project test
 
-oc new-app dev/app:TestCandidate-1.0.0 --name="app" --allow-missing-imagestream-tags=true
+oc new-app dev/app:latest --name="app" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app --remove-all
@@ -164,8 +164,8 @@ oc expose svc/app
 oc project prod
 
 # Creates the blue and green applications (observe that in prod is not a BuildConfig object created)
-oc new-app dev/app:ProdReady-1.0.0 --name="app-green" --allow-missing-imagestream-tags=true
-oc new-app dev/app:ProdReady-1.0.0 --name="app-blue" --allow-missing-imagestream-tags=true
+oc new-app dev/app:latest --name="app-green" --allow-missing-imagestream-tags=true
+oc new-app dev/app:latest --name="app-blue" --allow-missing-imagestream-tags=true
 
 # Removes the triggers
 oc set triggers dc/app-green --remove-all
@@ -175,13 +175,3 @@ oc expose dc/app-blue --port 8080
 oc expose dc/app-green --port 8080
 
 oc expose svc/app-green --name blue-green
-
-# Projects clean up
-
-oc login -u admin -p admin
-
-oc delete project myproject
-
-oc login -u developer -p developer
-
-oc delete project myproject
