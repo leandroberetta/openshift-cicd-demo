@@ -6,7 +6,11 @@
 # Script to create the environments and pipelines configuration.
 #
 
-oc login -u administrator -p administrator
+OCP_CLUSTER_URL=$1
+GIT_DEMO_URL=$2
+GIT_DEMO_BRANCH=$3
+
+oc login $OCP_CLUSTER_URL -u administrator -p administrator
 
 #
 # Jenkins
@@ -24,24 +28,24 @@ oc new-project dev --display-name=DEV
 oc new-project test --display-name=TEST
 oc new-project prod --display-name=PROD
 
-# Grant edit access to developer in dev project
+# Grants edit access to developer in dev project
 oc adm policy add-role-to-user edit developer -n dev
 
-# Grant view access to developer in test project
+# Grants view access to developer in test project
 oc adm policy add-role-to-user edit developer -n test
 
-# Grant view access to developer in prod project
+# Grants view access to developer in prod project
 oc adm policy add-role-to-user view developer -n prod
 
-# Grant view access to developer in jenkins project
+# Grants view access to developer in jenkins project
 oc adm policy add-role-to-user edit developer -n jenkins
 
-# Grant edit access to jenkins service account
+# Grants edit access to jenkins service account
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n test
 oc policy add-role-to-user edit system:serviceaccount:jenkins:jenkins -n prod
 
-# Allow prod service account the ability to pull images from dev
+# Allows prod service account the ability to pull images from dev
 oc policy add-role-to-group system:image-puller system:serviceaccounts:test -n dev
 oc policy add-role-to-group system:image-puller system:serviceaccounts:prod -n dev
 
@@ -73,73 +77,65 @@ oc expose svc/app
 
 oc project jenkins
 
-echo 'apiVersion: v1
+echo "apiVersion: v1
 kind: BuildConfig
 metadata:
-  labels:
-    name: "blue-green-pipeline"
-  name: "blue-green-pipeline"
+  name: blue-green-pipeline
 spec:
   source:
-    type: "Git"
+    type: Git
     git:
-      uri: "https://github.com/leandroberetta/openshift-cicd-demo"
-      ref: "develop"
+      uri: $GIT_DEMO_URL
+      ref: $GIT_DEMO_BRANCH
   strategy:
-    type: "JenkinsPipeline"
+    type: JenkinsPipeline
     jenkinsPipelineStrategy:
-      jenkinsfilePath: Jenkinsfile.bg' | oc create -f -
+      jenkinsfilePath: Jenkinsfile.bg" | oc create -f -
 
-echo 'apiVersion: v1
+echo "apiVersion: v1
 kind: BuildConfig
 metadata:
-  labels:
-    name: "ab-pipeline"
-  name: "ab-pipeline"
+  name: ab-pipeline
 spec:
   source:
-    type: "Git"
+    type: Git
     git:
-      uri: "https://github.com/leandroberetta/openshift-cicd-demo"
-      ref: "develop"
+      uri: $GIT_DEMO_URL
+      ref: $GIT_DEMO_BRANCH
   strategy:
-    type: "JenkinsPipeline"
+    type: JenkinsPipeline
     jenkinsPipelineStrategy:
-      jenkinsfilePath: Jenkinsfile.ab' | oc create -f -
+      jenkinsfilePath: Jenkinsfile.ab" | oc create -f -
 
-echo 'apiVersion: v1
+echo "apiVersion: v1
 kind: BuildConfig
 metadata:
-  labels:
-    name: "ci-pipeline"
-  name: "ci-pipeline"
+  name: ci-pipeline
 spec:
   source:
-    type: "Git"
+    type: Git
     git:
-      ref: "develop"
-      uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+      uri: $GIT_DEMO_URL
+      ref: $GIT_DEMO_BRANCH
   strategy:
-    type: "JenkinsPipeline"
+    type: JenkinsPipeline
     jenkinsPipelineStrategy:
-      jenkinsfilePath: Jenkinsfile.ci' | oc create -f -
+      jenkinsfilePath: Jenkinsfile.ci" | oc create -f -
 
-echo 'apiVersion: v1
+echo "apiVersion: v1
 kind: BuildConfig
 metadata:
-  labels:
-    name: "cd-pipeline"
-  name: "cd-pipeline"
+  name: cd-pipeline
 spec:
   source:
-    type: "Git"
+    type: Git
     git:
-      ref: "develop"
-      uri: "https://github.com/leandroberetta/openshift-cicd-demo"
+      uri: $GIT_DEMO_URL
+      ref: $GIT_DEMO_BRANCH
   strategy:
-    type: "JenkinsPipeline"
+    type: JenkinsPipeline
     jenkinsPipelineStrategy:
-      jenkinsfilePath: Jenkinsfile.cd' | oc create -f -
+      jenkinsfilePath: Jenkinsfile.cd" | oc create -f -
 
 #
 # Test application
