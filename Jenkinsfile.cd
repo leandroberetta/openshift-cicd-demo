@@ -43,11 +43,9 @@ try {
                         verbose: "false"
             }
 
-            stage('Deploy to PROD?') {
-                input "Deploy new version to PROD?"
-            }
-
             stage("Deploy to PROD") {
+                input "Deploy new version to PROD?"
+                
                 sh "oc patch dc app-green --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app-green\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"prod\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
 
                 openshiftDeploy depCfg: "app-green", namespace: "prod"
