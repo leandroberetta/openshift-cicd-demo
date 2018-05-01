@@ -21,7 +21,7 @@ try {
             def version = getVersionFromPom("pom.xml")
 
             stage("Build Image") {
-                def newTag = "TestingCandidate-${version}"
+                def newTag = "DevCandidate-${version}"
 
                 sh "oc project dev"
                 sh "oc start-build app --from-file=./target/ROOT.war -n dev"
@@ -42,7 +42,7 @@ try {
 
             stage("Deploy to Dev") {
                 sh "oc project dev"
-                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:TestingCandidate-$version\"}}}]}}' -n dev"
+                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:DevCandidate-$version\"}}}]}}' -n dev"
 
                 openshiftDeploy depCfg: "app",
                         namespace: "dev"

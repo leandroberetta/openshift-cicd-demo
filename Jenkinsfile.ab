@@ -1,7 +1,7 @@
 /**
- * Created by lberetta on 7/15/17.
+ * Author: Leandro Beretta <lberetta@redhat.com>
  */
-
+ 
 node() {
     def blueTraffic = 0
     def greenTraffic = 100

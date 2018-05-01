@@ -1,5 +1,5 @@
 /**
- * Created by lberetta on 7/15/17.
+ * Author: Leandro Beretta <lberetta@redhat.com>
  */
 
 try {
@@ -8,7 +8,7 @@ try {
         node("maven") {
 
             stage("Checkout") {
-                git url: "https://github.com/leandroberetta/openshift-cicd-demo", branch: "develop"
+                git url: env.GIT_DEMO_URL, branch: env.GIT_DEMO_BRANCH
             }
 
             stage("Compile") {
@@ -58,14 +58,14 @@ try {
                 openshiftTag alias: "false",
                         destStream: "app",
                         destTag: newTag,
-                        destinationNamespace: "dev",
+                        destinationNamespace: "test",
                         namespace: "dev",
                         srcStream: "app",
-                        srcTag: "latest",
+                        srcTag: "DevCandidate-${version}",
                         verbose: "true"
 
                 sh "oc project test"
-                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:TestCandidate-$version\"}}}]}}' -n test"
+                sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"test\", \"name\": \"app:TestCandidate-$version\"}}}]}}' -n test"
 
                 openshiftDeploy depCfg: "app",
                         namespace: "test"
@@ -76,7 +76,7 @@ try {
 
                 def newTag = "ProdReady-${version}"
 
-                openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "dev", namespace: "dev", srcStream: "app", srcTag: "latest", verbose: "false"
+                openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "prod", namespace: "test", srcStream: "app", srcTag: "TestCandidate-${version}", verbose: "false"
             }
 
             stage('Deploy Pre-Prod?') {
@@ -98,7 +98,7 @@ try {
                 if (active == "app-green")
                     dest = "app-blue"
 
-                sh "oc patch dc ${dest} --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"$dest\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
+                sh "oc patch dc ${dest} --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"$dest\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"prod\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
 
                 openshiftDeploy depCfg: dest,
                         namespace: 'prod'
