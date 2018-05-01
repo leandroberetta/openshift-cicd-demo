@@ -11,17 +11,6 @@ try {
                 env.version = selectVersion("app", "DevSnapshot", "dev");
             }
 
-            def newTag = "TestingCandidate-" + env.version
-
-            openshiftTag alias: "false",
-                    destStream: "app",
-                    destTag: newTag,
-                    destinationNamespace: "test",
-                    namespace: "dev",
-                    srcStream: "app",
-                    srcTag: "DevSnapshot-" + env.version,
-                    verbose: "true"
-
             stage("Deploy to Test") {
                 def newTag = "TestCandidate-${version}"
 
