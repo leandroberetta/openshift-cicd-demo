@@ -7,11 +7,11 @@ try {
 
         node() {
 
-            stage("Choose Version") {
+            stage("Select Version") {
                 env.version = selectVersion("app", "DevSnapshot", "dev");
             }
 
-            stage("Deploy to Test") {
+            stage("Deploy TEST") {
                 def newTag = "TestCandidate-${version}"
 
                 openshiftTag alias: "false",
@@ -38,17 +38,12 @@ try {
                 openshiftTag alias: "false", destStream: "app", destTag: newTag, destinationNamespace: "prod", namespace: "test", srcStream: "app", srcTag: "TestCandidate-${version}", verbose: "false"
             }
 
-            stage('Deploy Pre-Prod?') {
-                input "Deploy new version to Pre-Production?"
-            }
-
             // Blue/Green
 
             def dest = "app-green"
             def active = ""
 
-            stage("Deploy to Pre-Prod") {
-
+            stage("Deploy PRE-PROD") {
                 sh "oc project prod"
                 sh "oc get route blue-green -n prod -o jsonpath='{ .spec.to.name }' > active"
 
@@ -63,13 +58,13 @@ try {
                         namespace: 'prod'
             }
 
-            stage("Switch Version?") {
+            stage("Switch Version") {
                 input "Switch to new version?"
             }
 
             sh "oc patch route blue-green -n prod -p '{ \"spec\" : { \"to\" : { \"name\" : \"$dest\" } } }'"
 
-            stage("Finish Deployment") {
+            stage("Rollback PROD") {
                 rollback = input message: "Rollback to previous version?",
                         parameters: [choice(choices: "Yes\nNo", description: '', name: 'Rollback')]
             }

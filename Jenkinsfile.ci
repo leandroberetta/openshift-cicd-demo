@@ -42,7 +42,7 @@ try {
 
             }
 
-            stage("Deploy to DEV") {
+            stage("Deploy DEV") {
                 sh "oc project dev"
                 sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"dev\", \"name\": \"app:DevSnapshot-$version\"}}}]}}' -n dev"
 

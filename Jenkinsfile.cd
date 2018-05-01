@@ -7,7 +7,7 @@ try {
 
         node() {
 
-            stage("Choose Version") {
+            stage("Select Version") {
                 env.version = selectVersion("app", "DevSnapshot", "dev");
             }
 
@@ -22,7 +22,7 @@ try {
                     srcTag: "DevSnapshot-" + env.version,
                     verbose: "true"
 
-            stage("Deploy to TEST") {
+            stage("Deploy TEST") {
                 sh "oc patch dc app --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"test\", \"name\": \"app:TestingCandidate-$version\"}}}]}}' -n test"
 
                 openshiftDeploy depCfg: "app", namespace: "test"
@@ -43,7 +43,7 @@ try {
                         verbose: "false"
             }
 
-            stage("Deploy to PROD") {
+            stage("Deploy PROD") {
                 input "Deploy new version to PROD?"
                 
                 sh "oc patch dc app-green --patch '{\"spec\": { \"triggers\": [ { \"type\": \"ImageChange\", \"imageChangeParams\": { \"containerNames\": [ \"app-green\" ], \"from\": { \"kind\": \"ImageStreamTag\", \"namespace\": \"prod\", \"name\": \"app:ProdReady-$version\"}}}]}}' -n prod"
