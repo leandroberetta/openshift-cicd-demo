@@ -1,0 +1,2 @@
+HELLO_STRING=Testing the Hello World from OpenShift!
+ENVIRONMENT=TEST

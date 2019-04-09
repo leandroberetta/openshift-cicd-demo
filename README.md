@@ -1,58 +1,38 @@
-# openshift-cicd-demo
+# OpenShift CI/CD Demo
 
-![demo](demo/img/demo.png)
+Basic demonstration of OpenShift CI/CD pipelines for deploying applications across environments using advanced deployment strategies like Blue/Green.
 
-This repository contains a demo of the following OpenShift capabilities:
+## Pipeline
 
-* **Blue-Green** deployments with zero downtime
-* **A/B** deployments for experimental applications on production
-* Integration with **Jenkins Pipelines**
-* Continuous integration in Dev environment (**CI**)
-* Continuous deployment (Basic, Blue-Green and A/B) in Test and Production environment (**CD**)
+![Pipeline](demo/images/pipeline.png)
 
-## Requisites
+## Demo
 
-* An **OpenShift** cluster (3.5 or higher)
-* The OpenShift CLI client (**oc**)
-* Python 3.5 or higher (for testing the service) with requests library installed
+### Create the environments (projects)
 
-## Usage
+These are the environments where the applications will be promoted by the pipeline.
 
-The demo can be be used in every cluster of OpenShift. The easiest way is to use **minishift**:
+    oc new-project dev
+    oc new-project test
+    oc new-project prod
+    
+### Create a Jenkins instance
 
-    minishift start
+A Jenkins instances will be created in the development project.
 
-This repository contains a script called **demo.sh** to generate all the needed objects.
+    oc new-app --template=jenkins-ephemeral --name=jenkins -n dev
 
-    sh demo/demo.sh
+Then a set of permissions need to be granted.
 
-After the script execution the demo is ready to be used.
+    oc adm policy add-role-to-user edit system:serviceaccount:dev:jenkins -n test
+    oc adm policy add-role-to-user edit system:serviceaccount:dev:jenkins -n prod
 
-## Description
+### Create the application (and the pipeline)
 
-### Environments
+    oc new-app -f src/main/openshift/template.yaml -n dev -p APP_NAME=openshift-hello-world -p GIT_REPO=https://github.com/leandroberetta/openshift-cicd-demo.git -p GIT_BRANCH=master
 
-The environments created are:
+### Start the pipeline
 
-* Jenkins
-* Dev
-* Test
-* Prod
+    oc start-build openshift-hello-world-pipeline -n dev
 
-## Pipelines
 
-### Blue-Green Pipeline
-
-![bg-pipeline](demo/img/bg-pipeline.png)
-
-### A/B Pipeline
-
-![ab-pipeline](demo/img/ab-pipeline.png)
-
-### CI Pipeline (just for Dev deployments)
-
-![ci-pipeline](demo/img/ci-pipeline.png)
-
-### CD Pipeline (deploys an specific image without building)
-
-![cd-pipeline](demo/img/cd-pipeline.png)

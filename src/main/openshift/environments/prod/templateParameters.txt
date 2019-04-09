@@ -1,0 +1,2 @@
+HELLO_STRING=The productive Hello World from OpenShift!
+ENVIRONMENT=PROD
