@@ -9,8 +9,10 @@ pipeline {
     stages {
         stage("Initialize") {
             steps {
-                library(identifier: "openshift-pipeline-library@master", 
-                        retriever: modernSCM([$class: "GitSCMSource", 
+                library(identifier: "openshift-pipeline-library@v1.0", 
+                        retriever: modernSCM([$class: "GitSCMSource",
+                                              credentialsId: env.GIT_CREDENTIALS,
+                                              traits: [[$class: 'jenkins.plugins.git.traits.TagDiscoveryTrait']]
                                               remote: "https://github.com/leandroberetta/openshift-pipeline-library.git"]))     
 
                 script {
