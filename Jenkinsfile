@@ -12,7 +12,7 @@ pipeline {
                 library(identifier: "openshift-pipeline-library@v1.0", 
                         retriever: modernSCM([$class: "GitSCMSource",
                                               credentialsId: env.GIT_CREDENTIALS,
-                                              traits: [[$class: 'jenkins.plugins.git.traits.TagDiscoveryTrait']]
+                                              traits: [[$class: "jenkins.plugins.git.traits.TagDiscoveryTrait"]],
                                               remote: "https://github.com/leandroberetta/openshift-pipeline-library.git"]))     
 
                 script {
