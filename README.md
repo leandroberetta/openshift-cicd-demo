@@ -51,6 +51,6 @@ The commands to create and label the Secret are:
 
 A pipeline is a special type of BuildConfig so to create it the new-build command is used:
 
-    oc new-build ssh://git@github.com/redhatcsargentina/openshift-cicd-pipelines.git --name=hello-world-pipeline --strategy=pipeline -n dev
+    oc new-build ssh://git@github.com/leandroberetta/openshift-cicd-demo.git --name=hello-service-pipeline --strategy=pipeline -n dev
 
 After the execution of this command the pipeline is started.
