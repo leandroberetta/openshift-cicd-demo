@@ -9,11 +9,10 @@ pipeline {
     stages {
         stage("Initialize") {
             steps {
-                library(identifier: "openshift-pipeline-library@v1.0", 
+                library(identifier: "openshift-pipeline-library@master", 
                         retriever: modernSCM([$class: "GitSCMSource",
-                                              credentialsId: env.GIT_CREDENTIALS,
-                                              traits: [[$class: "jenkins.plugins.git.traits.TagDiscoveryTrait"]],
-                                              remote: "https://github.com/leandroberetta/openshift-pipeline-library.git"]))     
+                                              credentialsId: "dev-repository-credentials",
+                                              remote: "ssh://git@github.com/redhatcsargentina/openshift-cicd-pipelines.git"]))     
 
                 script {
                     env.IMAGE_NAME = env.APP_NAME
@@ -22,32 +21,29 @@ pipeline {
                     env.TEST_PROJECT = "test"
                     env.PROD_PROJECT = "prod"
                                     
-                    env.APPLICATION_TEMPLATE = "src/main/openshift/template.yaml"
-                    env.APPLICATION_TEMPLATE_PARAMETERS_DEV = "src/main/openshift/environments/dev/templateParameters.txt"
-                    env.APPLICATION_TEMPLATE_PARAMETERS_TEST = "src/main/openshift/environments/test/templateParameters.txt"
-                    env.APPLICATION_TEMPLATE_PARAMETERS_PROD = "src/main/openshift/environments/prod/templateParameters.txt"
-                    env.APPLICATION_INT_TEST_AGENT = "src/main/openshift/environments/test/integration-test/integration-test-agent.yaml"
-                    env.APPLICATION_INT_TEST_SCRIPT = "src/main/openshift/environments/test/integration-test/integration-test.py"
+                    env.APPLICATION_TEMPLATE = "./openshift/template.yaml"
+                    env.APPLICATION_TEMPLATE_PARAMETERS_DEV = "./openshift/environments/dev/templateParameters.txt"
+                    env.APPLICATION_TEMPLATE_PARAMETERS_TEST = "./openshift/environments/test/templateParameters.txt"
+                    env.APPLICATION_TEMPLATE_PARAMETERS_PROD = "./openshift/environments/prod/templateParameters.txt"
                 }
             }
         }
         stage("Checkout") {
-            steps {                
-                gitClone(repository: env.GIT_REPO, 
-                         branch: env.GIT_BRANCH, 
-                         credentialsId: env.GIT_CREDENTIALS)
-
-                stash "repo"
+            steps {      
+                script {
+                    env.GIT_COMMIT = checkout(scm).GIT_COMMIT
+                }
             }
         }
         stage("Compile") {
             steps {
-                sh "mvn clean package -DskipTests"
+                // Quarkus requires Maven 3.5.3+ but the agent's Maven version is 3.5.0, using the agent just for the oc command
+                sh "./mvnw clean package -DskipTests"
             }
         }
         stage("Test") {
             steps {
-                sh "mvn test"
+                sh "./mvnw test"
             }
         }
         stage("Build Image") {
@@ -58,9 +54,15 @@ pipeline {
                               parameters: env.APPLICATION_TEMPLATE_PARAMETERS_DEV,
                               createBuildObjects: true)
 
+                // Quarkus specific
+                sh "mkdir deploy"
+                sh "cp -R ./target/lib ./deploy"
+                sh "cp ./target/${env.APP_NAME}-runner.jar ./deploy"
+                sh "cp -R ./.s2i ./deploy"
+
                 buildImage(project: env.DEV_PROJECT, 
                            application: env.APP_NAME, 
-                           artifactsDir: "./target")
+                           artifactsDir: "./deploy")
             }
         }
         stage("Deploy DEV") {
@@ -110,15 +112,25 @@ pipeline {
                     cloud "openshift"
                     defaultContainer "jnlp"
                     label "${env.APP_NAME}-int-test"
-                    yaml readFile(env.APPLICATION_INT_TEST_AGENT)
+                    yaml """
+                        apiVersion: v1
+                        kind: Pod
+                        spec:
+                          containers:
+                          - name: python
+                            image: python:3
+                            command:
+                            - cat
+                            tty: true
+                    """                
                 }
             }
             steps {
-                unstash "repo"
+                checkout(scm)
 
                 container("python") {
                     sh "pip install requests"
-                    sh "python ${env.APPLICATION_INT_TEST_SCRIPT}"
+                    sh "python ./src/test/python/it.py"
                 }
             }
         }

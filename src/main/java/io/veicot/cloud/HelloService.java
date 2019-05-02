@@ -1,31 +1,33 @@
 package io.veicot.cloud;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-
 @Path("/")
-public class HelloService extends Application {
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class HelloService {
 
 	@GET
-	@Produces("text/plain")
-	public Response doGet() {
+	public HelloResponse get() {
 		Properties properties = this.loadProperties("artifact.properties");
 
-		return Response.ok(String.format("%s (Version: %s - Build Number: %s - Git Commit: %s - Environment: %s)", 
-										 System.getenv("HELLO_STRING"), 
-										 properties.get("artifact.version"),
-										 properties.get("artifact.buildNumber"),
-										 properties.get("artifact.gitCommit"),
-										 System.getenv("HELLO_ENVIRONMENT"))).build();
-	}
+		HelloResponse helloResponse = new HelloResponse();
+
+        helloResponse.setBuildNumber(properties.getProperty("artifact.buildNumber"));
+        helloResponse.setGitCommit(properties.getProperty("artifact.gitCommit"));
+        helloResponse.setVersion(properties.getProperty("artifact.version"));
+        helloResponse.setMessage(System.getenv("HELLO_MESSAGE"));
+        helloResponse.setEnvironment(System.getenv("HELLO_ENVIRONMENT"));
+        helloResponse.setPodName(System.getenv("HELLO_POD_NAME"));
+        helloResponse.setPodNamespace(System.getenv("HELLO_POD_NAMESPACE"));
+
+        return helloResponse;
+}
 
 	private Properties loadProperties(String fileName) {
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
