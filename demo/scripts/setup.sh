@@ -13,4 +13,4 @@ oc create secret generic repository-credentials --from-file=ssh-privatekey=$HOME
 oc label secret repository-credentials credential.sync.jenkins.openshift.io=true -n dev
 oc annotate secret repository-credentials 'build.openshift.io/source-secret-match-uri-1=ssh://github.com/*' -n dev
 
-oc new-build ssh://git@github.com/leandroberetta/openshift-cicd-demo.git --name=hello-service-pipeline --strategy=pipeline -n dev
+oc new-build ssh://git@github.com/leandroberetta/openshift-cicd-demo.git --name=hello-service-pipeline --strategy=pipeline -e APP_NAME=hello-service -n dev

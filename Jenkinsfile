@@ -12,7 +12,7 @@ pipeline {
                 library(identifier: "openshift-pipeline-library@master", 
                         retriever: modernSCM([$class: "GitSCMSource",
                                               credentialsId: "dev-repository-credentials",
-                                              remote: "ssh://git@github.com/redhatcsargentina/openshift-cicd-pipelines.git"]))     
+                                              remote: "ssh://git@github.com/leandroberetta/openshift-cicd-demo.git"]))     
 
                 script {
                     env.IMAGE_NAME = env.APP_NAME
