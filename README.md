@@ -2,9 +2,9 @@
 
 Basic demonstration of an OpenShift CI/CD pipeline for deploying applications across environments using advanced deployment strategies like Blue/Green.
 
-The pipeline is designed with the declarative approach and the [OpenShift Jenkins Pipeline Plugin](https://github.com/openshift/jenkins-client-plugin).
-
 ## Pipeline
+
+The pipeline is designed with the declarative approach and the [OpenShift Jenkins Pipeline Plugin](https://github.com/openshift/jenkins-client-plugin).
 
 ![Pipeline](demo/images/pipeline.png)
 
@@ -14,17 +14,17 @@ The pipeline uses a shared library for common functionality, the library is embe
 
 ## Demo
 
-### Create the environments
+### Create the Projects
 
-These are the environments used to promote the application:
+These are the projects (environments) used to deploy the application:
 
     oc new-project dev
     oc new-project test
     oc new-project prod
     
-### Create a Jenkins instance
+### Create a Jenkins Instance
 
-A Jenkins instances is created in the development project:
+A Jenkins instance is created in the **dev** project:
 
     oc new-app --template=jenkins-ephemeral --name=jenkins -n dev
 
@@ -33,7 +33,7 @@ Then a set of permissions need to be granted:
     oc adm policy add-role-to-user edit system:serviceaccount:dev:jenkins -n test
     oc adm policy add-role-to-user edit system:serviceaccount:dev:jenkins -n prod
 
-### Create the pull Secret (optional)
+### Create the Pull Secret (Optional)
 
 If the repository used is private a pull Secret is needed.
 
@@ -47,7 +47,7 @@ The commands to create and label the Secret are:
     oc label secret repository-credentials credential.sync.jenkins.openshift.io=true -n dev
     oc annotate secret repository-credentials 'build.openshift.io/source-secret-match-uri-1=ssh://github.com/*' -n dev
 
-### Create the pipeline
+### Create the Pipeline
 
 A pipeline is a special type of BuildConfig so to create it the new-build command is used:
 
