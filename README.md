@@ -1,8 +1,8 @@
-# OpenShift CI/CD Pipelines
+# OpenShift CI/CD Demo
 
 Basic demonstration of an OpenShift CI/CD pipeline for deploying applications across environments using advanced deployment strategies like Blue/Green.
 
-The pipeline uses the new declarative approach and the [OpenShift Jenkins Pipeline Plugin](https://github.com/openshift/jenkins-client-plugin).
+The pipeline is designed with the declarative approach and the [OpenShift Jenkins Pipeline Plugin](https://github.com/openshift/jenkins-client-plugin).
 
 ## Pipeline
 

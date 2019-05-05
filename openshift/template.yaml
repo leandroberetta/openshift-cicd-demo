@@ -154,7 +154,7 @@ parameters:
   displayName: Git Repository
   name: GIT_REPO
   required: true
-  value: ssh://git@github.com/redhatcsargentina/openshift-cicd-pipelines.git
+  value: ssh://git@github.com/leandroberetta/openshift-cicd-demo.git
 - description: Git Branch
   displayName: Git Branch
   name: GIT_BRANCH
