@@ -1,2 +1,2 @@
 HELLO_STRING=Hello World from OpenShift!
-ENVIRONMENT=DEV
+ENVIRONMENT=dev

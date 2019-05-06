@@ -7,32 +7,16 @@ pipeline {
         disableConcurrentBuilds()
     }
     stages {
-        stage("Initialize") {
-            steps {
+        stage("Checkout") {
+            steps {     
                 library(identifier: "openshift-pipeline-library@master", 
                         retriever: modernSCM([$class: "GitSCMSource",
                                               credentialsId: "dev-repository-credentials",
-                                              remote: "ssh://git@github.com/leandroberetta/openshift-cicd-demo.git"]))     
-
-                script {
-                    env.IMAGE_NAME = env.APP_NAME
-    
-                    env.DEV_PROJECT = "dev"
-                    env.TEST_PROJECT = "test"
-                    env.PROD_PROJECT = "prod"
-                                    
-                    env.APPLICATION_TEMPLATE = "./openshift/template.yaml"
-                    env.APPLICATION_TEMPLATE_PARAMETERS_DEV = "./openshift/environments/dev/templateParameters.txt"
-                    env.APPLICATION_TEMPLATE_PARAMETERS_TEST = "./openshift/environments/test/templateParameters.txt"
-                    env.APPLICATION_TEMPLATE_PARAMETERS_PROD = "./openshift/environments/prod/templateParameters.txt"
-                }
-            }
-        }
-        stage("Checkout") {
-            steps {      
-                script {
-                    env.GIT_COMMIT = checkout(scm).GIT_COMMIT
-                }
+                                              remote: "ssh://git@github.com/leandroberetta/openshift-cicd-demo.git"]))                
+                
+                initParameters() 
+                
+                gitClone()
             }
         }
         stage("Compile") {
@@ -126,7 +110,7 @@ pipeline {
                 }
             }
             steps {
-                checkout(scm)
+                gitClone()
 
                 container("python") {
                     sh "pip install requests"
