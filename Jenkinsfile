@@ -34,8 +34,8 @@ pipeline {
             steps {
                 applyTemplate(project: env.DEV_PROJECT, 
                               application: env.APP_NAME, 
-                              template: env.APPLICATION_TEMPLATE, 
-                              parameters: env.APPLICATION_TEMPLATE_PARAMETERS_DEV,
+                              template: env.APP_TEMPLATE, 
+                              parameters: env.APP_TEMPLATE_PARAMETERS_DEV,
                               createBuildObjects: true)
 
                 // Quarkus specific tasks
@@ -74,8 +74,8 @@ pipeline {
 
                 applyTemplate(project: env.TEST_PROJECT, 
                               application: env.APP_NAME, 
-                              template: env.APPLICATION_TEMPLATE, 
-                              parameters: env.APPLICATION_TEMPLATE_PARAMETERS_TEST)
+                              template: env.APP_TEMPLATE, 
+                              parameters: env.APP_TEMPLATE_PARAMETERS_TEST)
 
                 tagImage(srcProject: env.DEV_PROJECT, 
                          srcImage: env.IMAGE_NAME, 
@@ -124,20 +124,20 @@ pipeline {
                     if (!blueGreen.existsBlueGreenRoute(project: env.PROD_PROJECT, application: env.APP_NAME)) {
                         applyTemplate(project: env.PROD_PROJECT, 
                                       application: blueGreen.getApplication1Name(env.APP_NAME), 
-                                      template: env.APPLICATION_TEMPLATE, 
-                                      parameters: env.APPLICATION_TEMPLATE_PARAMETERS_PROD)
+                                      template: env.APP_TEMPLATE, 
+                                      parameters: env.APP_TEMPLATE_PARAMETERS_PROD)
                                       
                         applyTemplate(project: env.PROD_PROJECT, 
                                       application: blueGreen.getApplication2Name(env.APP_NAME), 
-                                      template: env.APPLICATION_TEMPLATE, 
-                                      parameters: env.APPLICATION_TEMPLATE_PARAMETERS_PROD) 
+                                      template: env.APP_TEMPLATE, 
+                                      parameters: env.APP_TEMPLATE_PARAMETERS_PROD) 
 
                         blueGreen.createBlueGreenRoute(project: env.PROD_PROJECT, application: env.APP_NAME)
                     } else {
                         applyTemplate(project: env.PROD_PROJECT, 
                                       application: blueGreen.getBlueApplication(project: env.PROD_PROJECT, application: env.APP_NAME), 
-                                      template: env.APPLICATION_TEMPLATE, 
-                                      parameters: env.APPLICATION_TEMPLATE_PARAMETERS_PROD)
+                                      template: env.APP_TEMPLATE, 
+                                      parameters: env.APP_TEMPLATE_PARAMETERS_PROD)
                     }
                     
                     tagImage(srcProject: env.TEST_PROJECT, 
