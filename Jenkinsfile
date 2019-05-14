@@ -21,13 +21,12 @@ pipeline {
         }
         stage("Compile") {
             steps {
-                // Quarkus requires Maven 3.5.3+ but the Jenkins agent's Maven version is 3.5.0, using the agent just for the oc command
-                sh "./mvnw clean package -DskipTests"
+                sh "mvn package -DskipTests"
             }
         }
         stage("Test") {
             steps {
-                sh "./mvnw test"
+                sh "mvn test"
             }
         }
         stage("Build Image") {
@@ -38,15 +37,9 @@ pipeline {
                               parameters: env.APP_TEMPLATE_PARAMETERS_DEV,
                               createBuildObjects: true)
 
-                // Quarkus specific tasks
-                sh "mkdir deploy"
-                sh "cp -R ./target/lib ./deploy"
-                sh "cp ./target/${env.APP_NAME}-runner.jar ./deploy"
-                sh "cp -R ./.s2i ./deploy"
-
                 buildImage(project: env.DEV_PROJECT, 
                            application: env.APP_NAME, 
-                           artifactsDir: "./deploy")
+                           artifactsDir: "./target")
             }
         }
         stage("Deploy DEV") {
