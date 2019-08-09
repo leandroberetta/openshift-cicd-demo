@@ -17,6 +17,8 @@ pipeline {
                 initParameters() 
                 
                 gitClone()
+
+                stash "."
             }
         }
         stage("Compile") {
@@ -103,7 +105,7 @@ pipeline {
                 }
             }
             steps {
-                gitClone()
+                unstash "."
 
                 container("python") {
                     sh "pip install requests"
