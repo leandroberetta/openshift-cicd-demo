@@ -11,14 +11,11 @@ pipeline {
             steps {     
                 library(identifier: "openshift-pipeline-library@master", 
                         retriever: modernSCM([$class: "GitSCMSource",
-                                              credentialsId: "dev-repository-credentials",
-                                              remote: "ssh://git@github.com/leandroberetta/openshift-cicd-demo.git"]))                
+                                              remote: "https://github.com/leandroberetta/openshift-cicd-demo.git"]))                
                 
                 initParameters() 
                 
                 gitClone()
-
-                stash "repo"
             }
         }
         stage("Compile") {
@@ -86,31 +83,8 @@ pipeline {
             }
         }
         stage("Integration Test") {
-            agent {
-                kubernetes {
-                    cloud "openshift"
-                    defaultContainer "jnlp"
-                    label "${env.APP_NAME}-int-test"
-                    yaml """
-                        apiVersion: v1
-                        kind: Pod
-                        spec:
-                          containers:
-                          - name: python
-                            image: python:3
-                            command:
-                            - cat
-                            tty: true
-                    """                
-                }
-            }
             steps {
-                unstash "repo"
-
-                container("python") {
-                    sh "pip install requests"
-                    sh "python ./src/test/python/it.py"
-                }
+                sleep(5)
             }
         }
         stage("Deploy PROD (Blue)") {

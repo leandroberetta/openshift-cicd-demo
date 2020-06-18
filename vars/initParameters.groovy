@@ -3,9 +3,9 @@
 def call() {
     env.IMAGE_NAME = env.APP_NAME
     
-    env.DEV_PROJECT = "dev"
-    env.TEST_PROJECT = "test"
-    env.PROD_PROJECT = "prod"
+    env.DEV_PROJECT = "${env.APP_NAME}-dev"
+    env.TEST_PROJECT = "${env.APP_NAME}-test"
+    env.PROD_PROJECT = "${env.APP_NAME}-prod"
                     
     env.APP_TEMPLATE = "./openshift/template.yaml"
     env.APP_TEMPLATE_PARAMETERS_DEV = "./openshift/environments/dev/templateParameters.txt"

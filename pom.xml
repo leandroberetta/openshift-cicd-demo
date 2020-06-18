@@ -5,8 +5,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.veicot.cloud</groupId>
-    <artifactId>hello-service</artifactId>
-    <name>Hello Service</name>
+    <artifactId>hello</artifactId>
+    <name>Hello</name>
     <packaging>war</packaging>
     <version>1.0.0</version>
 
