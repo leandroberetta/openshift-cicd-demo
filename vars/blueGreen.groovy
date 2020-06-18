@@ -29,7 +29,7 @@ def createBlueGreenRoute(parameters) {
 def getBlueApplication(parameters) {
     openshift.withCluster(parameters.clusterUrl, parameters.credentialsId) {
         openshift.withProject(parameters.project) {
-            def route = openshift.selector("route/${parameters.application}-blue-green").object().object()
+            def route = openshift.selector("route/${parameters.application}-blue-green").object()
             def blueApplication = "${parameters.application}-1"  
                             
             if (route.spec.to.name.compareTo("${parameters.application}-1") == 0) {
@@ -44,7 +44,7 @@ def getBlueApplication(parameters) {
 def switchToGreenApplication(parameters) {
     openshift.withCluster(parameters.clusterUrl, parameters.credentialsId) {
         openshift.withProject(parameters.project) {
-            def route = openshift.selector("route/${parameters.application}-blue-green").object().object()
+            def route = openshift.selector("route/${parameters.application}-blue-green").object()
             
             route.spec.to.name = getBlueApplication(project: parameters.project, application: parameters.application)
             
