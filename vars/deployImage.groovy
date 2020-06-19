@@ -11,8 +11,7 @@ def call(parameters) {
 def rolloutApplication(application, image, tag) {
     def dc = openshift.selector("dc/${application}").object()
 
-    openshift.set("triggers", "dc/${application}", "--from-image=${image}:${tag}", "-c ${dc.spec.template.spec.containers[0].name}", "--manual")    
+    openshift.set("triggers", "dc/${application}", "--from-image=${image}:${tag}", "-c ${dc.spec.template.spec.containers[0].name}")    
     
-    openshift.selector("dc", application).rollout().latest()    
     openshift.selector("dc", application).rollout().status()
 }
