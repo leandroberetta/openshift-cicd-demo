@@ -39,7 +39,7 @@ Create the triggers (webhooks):
 
 Get the route for the webhook:
 
-    export HELLO_EVENT_LISTENER_ROUTE=$(oc get route el-event-listener -o jsonpath='{.spec.host}' -n hello-dev)
+    export HELLO_EVENT_LISTENER_ROUTE=$(oc get route el-hello-event-listener -o jsonpath='{.spec.host}' -n hello-dev)
 
 ##### CI Pipeline (deploy to DEV building from develop branch)
 

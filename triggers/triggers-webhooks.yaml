@@ -7,7 +7,7 @@ spec:
     - name: GIT_URL
     - name: GIT_REVISION
     - name: APPLICATION
-    - name: PROJECT
+    - name: PROJECT_PREFFIX
     - name: CONTEXT_PATH
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
@@ -43,7 +43,7 @@ spec:
     - name: GIT_URL
     - name: GIT_REVISION
     - name: APPLICATION
-    - name: PROJECT
+    - name: PROJECT_PREFFIX
     - name: CONTEXT_PATH
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
