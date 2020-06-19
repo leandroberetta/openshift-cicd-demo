@@ -13,7 +13,7 @@ Basic demonstration of an OpenShift CI/CD pipeline for deploying applications ac
 * OpenShift 4.1 or higher
 * OpenShift Pipelines installed in OpenShift
 
-### Steps
+### Steps
 
 #### Projects
 
@@ -23,7 +23,7 @@ Create the projects (environments):
     oc new-project hello-test
     oc new-project hello-prod
 
-#### Pipelines
+#### Pipelines
 
 Create the tasks:
 
@@ -55,7 +55,7 @@ This action results in a PipelineRun:
 
 ![ci-pipeline-run](./docs/images/ci-pipeline-run.png)
 
-## CD Pipeline (Deploy to TEST and PROD building from master branch)
+##### CD Pipeline (Deploy to TEST and PROD building from master branch)
 
 A CD pipeline is started with a pull request event from the repository. It can be simulated with the following command:
 
