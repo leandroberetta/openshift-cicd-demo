@@ -1,0 +1,8 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- resources_patch.yaml
+configMapGenerator:
+- name: hello
+  literals:
+  - HELLO_MESSAGE=Hello World! (TEST)

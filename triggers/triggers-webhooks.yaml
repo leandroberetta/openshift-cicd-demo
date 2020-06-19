@@ -1,0 +1,163 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: hello-ci-trigger-template
+spec:
+  params:
+    - name: GIT_URL
+    - name: GIT_REVISION
+    - name: APPLICATION
+    - name: PROJECT
+    - name: CONTEXT_PATH
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: hello-ci-pipeline-run-
+      spec:
+        pipelineRef:
+          name: hello-ci-pipeline
+        params:
+          - name: GIT_URL
+            value: $(params.GIT_URL)
+          - name: GIT_REVISION
+            value: $(params.GIT_REVISION)
+          - name: APPLICATION
+            value: $(params.APPLICATION)
+          - name: PROJECT_PREFFIX
+            value: $(params.PROJECT_PREFFIX)
+          - name: CONTEXT_PATH
+            value: $(params.CONTEXT_PATH)
+        workspaces:
+          - name: source
+            persistentVolumeClaim:
+              claimName: hello-pvc
+            subPath: hello-ci
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: hello-cd-pipeline-template
+spec:
+  params:
+    - name: GIT_URL
+    - name: GIT_REVISION
+    - name: APPLICATION
+    - name: PROJECT
+    - name: CONTEXT_PATH
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: hello-cd-pipeline-run-$(uid)
+      spec:
+        pipelineRef:
+          name: hello-cd-pipeline
+        params:
+          - name: GIT_URL
+            value: $(params.GIT_URL)
+          - name: GIT_REVISION
+            value: $(params.GIT_REVISION)
+          - name: APPLICATION
+            value: $(params.APPLICATION)
+          - name: PROJECT_PREFFIX
+            value: $(params.PROJECT_PREFFIX)
+          - name: CONTEXT_PATH
+            value: $(params.CONTEXT_PATH)
+        workspaces:
+          - name: source
+            persistentVolumeClaim:
+              claimName: pipelines-pvc
+            subPath: hello-cd
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: github-binding
+spec:
+  params:
+    - name: GIT_URL
+      value: $(body.repository.url)
+    - name: GIT_REVISION
+      value: $(body.head_commit.id)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: hello-binding
+spec:
+  params:
+    - name: APP_NAME
+      value: hello
+    - name: PROJECT_PREFFIX
+      value: hello
+    - name: CONTEXT_PATH
+      value: ./application
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: hello-event-listener
+spec:
+  serviceAccountName: triggers
+  triggers:
+    - name: hello-ci-event-listener
+      interceptors:
+        - cel:
+            filter: "body.ref.contains('develop')"
+        - github:
+            secretRef:
+              secretName: github-secret
+              secretKey: secretToken
+            eventTypes:
+              - push
+      bindings:
+        - name: github-binding
+        - name: hello-binding
+      template:
+        name: hello-ci-trigger-template
+    - name: hello-cd-event-listener
+      interceptors:
+        - cel:
+            filter: "body.ref.contains('master')"
+        - github:
+            secretRef:
+              secretName: github-secret
+              secretKey: secretToken
+            eventTypes:
+              - push
+      bindings:
+        - name: github-binding
+        - name: hello-binding
+      template:
+        name: hello-cd-trigger-template
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: el-hello-event-listener
+spec:
+  port:
+    targetPort: http-listener
+  to:
+    kind: Service
+    name: el-hello-event-listener
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-secret
+type: Opaque
+stringData:
+  secretToken: "h3ll0-d3m0"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hello-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

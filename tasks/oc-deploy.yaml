@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: oc-deploy  
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: DEPLOYMENT
+    type: string
+  - name: KUSTOMIZATION
+    type: string    
+  - name: PROJECT
+    type: string
+  - name: IMAGE
+    type: string
+  steps:
+  - name: apply-manifests
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    script: |
+      oc apply -k $(workspaces.source.path)/$(params.KUSTOMIZATION) -n $(params.PROJECT)
+  - name: set-new-image
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    script: |
+      oc set image deployment $(params.DEPLOYMENT) $(params.DEPLOYMENT)=$(params.IMAGE) -n $(params.PROJECT)
+
+      if [[ $(params.IMAGE) == *"latest"* ]]; then
+        oc patch deployment/$(params.DEPLOYMENT) --patch "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"last-restart\":\"`date +'%s'`\"}}}}}" -n $(params.PROJECT)
+      fi
+  - name: check-deployment-status
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    script: |      
+      oc rollout status deployment/$(params.DEPLOYMENT) -n $(params.PROJECT) 

@@ -1,0 +1,75 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hello-cd-pipeline
+spec:
+  params:
+    - name: GIT_URL
+    - name: GIT_REVISION
+    - name: CONTEXT_PATH
+    - name: APPLICATION
+    - name: PROJECT
+  workspaces:
+    - name: source
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: $(params.GIT_URL)
+        - name: revision
+          value: $(params.GIT_REVISION)
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: source
+    - name: build
+      taskRef:
+        name: s2i-quarkus
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)-dev/$(params.APPLICATION):latest
+      runAfter:
+        - clone
+    - name: deploy-test
+      taskRef:
+        name: oc-deploy
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: DEPLOYMENT
+          value: $(params.APPLICATION)
+        - name: KUSTOMIZATION
+          value: $(params.CONTEXT_PATH)/k8s/overlays/test
+        - name: PROJECT
+          value: $(params.PROJECT)-test
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)-dev/$(params.APPLICATION):latest
+      runAfter:
+        - build
+    - name: deploy-prod
+      taskRef:
+        name: oc-deploy
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: DEPLOYMENT
+          value: $(params.APPLICATION)
+        - name: KUSTOMIZATION
+          value: $(params.CONTEXT_PATH)/k8s/overlays/prod
+        - name: PROJECT
+          value: $(params.PROJECT)-prod
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)/$(params.APPLICATION):latest
+      runAfter:
+        - deploy-test
