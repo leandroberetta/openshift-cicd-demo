@@ -43,7 +43,7 @@ A CI pipeline is started with a push event from the repository (Webhook). It can
 
     curl -v http://$HELLO_EVENT_LISTENER_ROUTE \
         -H 'X-GitHub-Event: push' \
-        -H 'X-Hub-Signature: sha1=bcc23503806d3b69aa0671c94e67e831308db556' \
+        -H 'X-Hub-Signature: sha1=9f257f3c340bf1c2d116f5cd99aeacf62811b657' \
         -H 'Content-Type: application/json' \
         -d '{"ref": "refs/heads/develop","head_commit": {"id": "master"},"repository": {"url": "https://github.com/leandroberetta/openshift-cicd-demo"}}'
 
