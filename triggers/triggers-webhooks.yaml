@@ -130,7 +130,7 @@ spec:
               secretName: github-secret
               secretKey: secretToken
             eventTypes:
-              - pull-request
+              - push
       bindings:
         - name: github-binding
         - name: hello-binding
