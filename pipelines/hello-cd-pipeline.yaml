@@ -73,6 +73,6 @@ spec:
         - name: PROJECT
           value: $(params.PROJECT_PREFFIX)-prod
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)/$(params.APPLICATION):latest
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)-dev/$(params.APPLICATION):latest
       runAfter:
         - deploy-test
