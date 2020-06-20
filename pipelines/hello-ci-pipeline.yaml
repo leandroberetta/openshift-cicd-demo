@@ -27,6 +27,17 @@ spec:
       workspaces:
         - name: output
           workspace: source
+    - name: test
+      taskRef:
+        name: mvn-test
+      params:
+        - name: CONTEXT_PATH
+          value: $(params.CONTEXT_PATH)
+      workspaces:
+        - name: source
+          workspace: source
+      runAfter:
+        - clone
     - name: build
       taskRef:
         name: s2i-quarkus
@@ -41,7 +52,7 @@ spec:
         - name: IMAGE
           value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)-dev/hello:latest
       runAfter:
-        - clone
+        - test
     - name: deploy-dev
       taskRef:
         name: oc-deploy

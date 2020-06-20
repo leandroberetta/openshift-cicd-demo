@@ -51,7 +51,7 @@ This action creates a PipelineRun:
 
 ![ci-pipeline-run](./docs/images/ci-pipeline-run.png)
 
-#### CD Pipeline (Deploy to TEST and PROD building from master branch)
+#### CD Pipeline (deploy to TEST and PROD building from master branch)
 
 A CD pipeline is started with a pull request event from the repository. It can be simulated with the following command:
 

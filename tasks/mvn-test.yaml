@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: mvn-test
+  namespace: hello-dev  
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: CONTEXT_PATH
+  steps:
+  - name: test
+    image: quay.io/quarkus/ubi-quarkus-native-s2i:19.3.1-java11
+    workingdir: $(workspaces.source.path)
+    script: |
+      mvn test -f $(params.CONTEXT_PATH)
