@@ -2,13 +2,14 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: hello-cd-pipeline
+  namespace: hello-dev
 spec:
   params:
     - name: GIT_URL
     - name: GIT_REVISION
     - name: CONTEXT_PATH
     - name: APPLICATION
-    - name: PROJECT
+    - name: PROJECT_PREFFIX
   workspaces:
     - name: source
   tasks:
@@ -35,8 +36,10 @@ spec:
       params:
         - name: TLSVERIFY
           value: "false"
+        - name: PATH_CONTEXT
+          value: $(params.CONTEXT_PATH)
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)-dev/$(params.APPLICATION):latest
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)-dev/$(params.APPLICATION):latest
       runAfter:
         - clone
     - name: deploy-test
@@ -51,9 +54,9 @@ spec:
         - name: KUSTOMIZATION
           value: $(params.CONTEXT_PATH)/k8s/overlays/test
         - name: PROJECT
-          value: $(params.PROJECT)-test
+          value: $(params.PROJECT_PREFFIX)-test
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)-dev/$(params.APPLICATION):latest
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)-dev/$(params.APPLICATION):latest
       runAfter:
         - build
     - name: deploy-prod
@@ -68,8 +71,8 @@ spec:
         - name: KUSTOMIZATION
           value: $(params.CONTEXT_PATH)/k8s/overlays/prod
         - name: PROJECT
-          value: $(params.PROJECT)-prod
+          value: $(params.PROJECT_PREFFIX)-prod
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)/$(params.APPLICATION):latest
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)/$(params.APPLICATION):latest
       runAfter:
         - deploy-test

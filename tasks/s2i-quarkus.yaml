@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: s2i-quarkus
+  namespace: hello-dev
 spec:
   params:
     - name: PATH_CONTEXT

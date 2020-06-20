@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: triggers
+  namespace: hello-dev
 secrets:
   - name: github-secret
 ---
@@ -9,6 +10,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: triggers
+  namespace: hello-dev
 rules:
   - apiGroups:
       - triggers.tekton.dev
@@ -41,6 +43,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: triggers
+  namespace: hello-dev
 subjects:
   - kind: ServiceAccount
     name: triggers

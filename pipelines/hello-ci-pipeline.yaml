@@ -1,14 +1,15 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: java-ci-pipeline
+  name: hello-ci-pipeline
+  namespace: hello-dev
 spec:
   params:
     - name: GIT_URL
     - name: GIT_REVISION
     - name: CONTEXT_PATH
     - name: APPLICATION
-    - name: PROJECT    
+    - name: PROJECT_PREFFIX    
   workspaces:
     - name: source
   tasks:
@@ -38,7 +39,7 @@ spec:
         - name: PATH_CONTEXT
           value: $(params.CONTEXT_PATH)
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)-dev/hello:latest
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)-dev/hello:latest
       runAfter:
         - clone
     - name: deploy-dev
@@ -53,8 +54,8 @@ spec:
         - name: KUSTOMIZATION
           value: $(params.CONTEXT_PATH)/k8s/overlays/dev
         - name: PROJECT
-          value: $(params.PROJECT)-dev
+          value: $(params.PROJECT_PREFFIX)-dev
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT)-dev/hello:latest
+          value: image-registry.openshift-image-registry.svc:5000/$(params.PROJECT_PREFFIX)-dev/hello:latest
       runAfter:
         - build

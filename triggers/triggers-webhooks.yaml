@@ -2,6 +2,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: hello-ci-trigger-template
+  namespace: hello-dev
 spec:
   params:
     - name: GIT_URL
@@ -37,7 +38,8 @@ spec:
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: hello-cd-pipeline-template
+  name: hello-cd-trigger-template
+  namespace: hello-dev
 spec:
   params:
     - name: GIT_URL
@@ -67,13 +69,14 @@ spec:
         workspaces:
           - name: source
             persistentVolumeClaim:
-              claimName: pipelines-pvc
+              claimName: hello-pvc
             subPath: hello-cd
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: github-binding
+  namespace: hello-dev
 spec:
   params:
     - name: GIT_URL
@@ -85,9 +88,10 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: hello-binding
+  namespace: hello-dev
 spec:
   params:
-    - name: APP_NAME
+    - name: APPLICATION
       value: hello
     - name: PROJECT_PREFFIX
       value: hello
@@ -98,6 +102,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: hello-event-listener
+  namespace: hello-dev
 spec:
   serviceAccountName: triggers
   triggers:
@@ -125,7 +130,7 @@ spec:
               secretName: github-secret
               secretKey: secretToken
             eventTypes:
-              - push
+              - pull-request
       bindings:
         - name: github-binding
         - name: hello-binding
@@ -136,6 +141,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: el-hello-event-listener
+  namespace: hello-dev
 spec:
   port:
     targetPort: http-listener
@@ -147,17 +153,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: github-secret
+  namespace: hello-dev
 type: Opaque
 stringData:
   secretToken: "h3ll0-d3m0"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: hello-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi

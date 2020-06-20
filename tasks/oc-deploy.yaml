@@ -1,7 +1,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: oc-deploy  
+  name: oc-deploy
+  namespace: hello-dev  
 spec:
   workspaces:
   - name: source

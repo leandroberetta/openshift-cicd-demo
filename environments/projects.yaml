@@ -1,0 +1,14 @@
+kind: ProjectRequest
+apiVersion: project.openshift.io/v1
+metadata:
+  name: hello-dev
+---
+kind: ProjectRequest
+apiVersion: project.openshift.io/v1
+metadata:
+  name: hello-test
+---
+kind: ProjectRequest
+apiVersion: project.openshift.io/v1
+metadata:
+  name: hello-prod
