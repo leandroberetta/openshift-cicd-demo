@@ -13,15 +13,13 @@ Basic demonstration of an OpenShift CI/CD pipeline for deploying applications ac
 * OpenShift 4.1 or higher
 * OpenShift Pipelines installed in OpenShift
 
-### Steps
-
-#### Projects
+### Projects
 
 Create the projects (environments):
 
     oc apply -R -f ./environments
 
-#### Pipelines
+### Pipelines
 
 Create the tasks:
 
@@ -39,7 +37,7 @@ Get the route for the webhook:
 
     export HELLO_EVENT_LISTENER_ROUTE=$(oc get route el-hello-event-listener -o jsonpath='{.spec.host}' -n hello-dev)
 
-##### CI Pipeline (deploy to DEV building from develop branch)
+#### CI Pipeline (deploy to DEV building from develop branch)
 
 A CI pipeline is started with a push event from the repository (Webhook). It can be simulated with the following command:
 
@@ -49,11 +47,11 @@ A CI pipeline is started with a push event from the repository (Webhook). It can
         -H 'Content-Type: application/json' \
         -d '{"ref": "refs/heads/develop","head_commit": {"id": "develop"},"repository": {"url": "https://github.com/leandroberetta/openshift-cicd-demo"}}'
 
-This action results in a PipelineRun:
+This action creates a PipelineRun:
 
 ![ci-pipeline-run](./docs/images/ci-pipeline-run.png)
 
-##### CD Pipeline (Deploy to TEST and PROD building from master branch)
+#### CD Pipeline (Deploy to TEST and PROD building from master branch)
 
 A CD pipeline is started with a pull request event from the repository. It can be simulated with the following command:
 
@@ -63,6 +61,6 @@ A CD pipeline is started with a pull request event from the repository. It can b
         -H 'Content-Type: application/json' \
         -d '{"ref": "refs/heads/master","head_commit": {"id": "master"},"repository": {"url": "https://github.com/leandroberetta/openshift-cicd-demo"}}'
 
-This action results in a PipelineRun:
+This action creates a PipelineRun:
 
 ![cd-pipeline-run](./docs/images/cd-pipeline-run.png)        
