@@ -1,6 +1,6 @@
 # OpenShift CI/CD Demo
 
-Basic demonstration of an OpenShift CI/CD pipeline for deploying applications across environments.
+Basic demonstration of OpenShift Pipelines for deploying applications across environments.
 
 ## Pipelines
 
